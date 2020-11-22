@@ -40,9 +40,10 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:60,1',
             'bindings',
+            'verifySelfToken'
         ],
     ];
-
+ 
     /**
      * The application's route middleware.
      *
@@ -57,5 +58,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verifySelfToken' => \App\Http\Middleware\verifySelfToken::class,
     ];
 }

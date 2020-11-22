@@ -33,9 +33,6 @@ class LoginController extends Controller
                   $rule = ["code" => ["required" => true]];
                   // 获取的 code
                   $code = $_GET['code'];
-                  // 获取所有 get 数据
-                  $whole = $_GET;
-                  
                 // 验证 code 必填
                 $param = $this->verifyparams
                 -> init($_GET, $rule)
@@ -48,7 +45,7 @@ class LoginController extends Controller
                 $res = $this->wechatcurl -> code2session($code);
                 
                 // 保存数据
-                $data['data'] = $this->datainfo->create_query($res,$whole);
+                $data['data'] = $this->datainfo->create_query($res);
                 
                 return response()->json($data);
             } catch (\Exception $e) {
