@@ -33,6 +33,7 @@ class LoginController extends Controller
                   $rule = ["code" => ["required" => true]];
                   // 获取的 code
                   $code = $_GET['code'];
+//                  dd($code);
                 // 验证 code 必填
                 $param = $this->verifyparams
                 -> init($_GET, $rule)
