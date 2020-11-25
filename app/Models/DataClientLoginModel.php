@@ -5,41 +5,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\GuidService;
 
-class DataClientLoginModel extends Model
+class DataClientLoginModel extends BaseModel
 {
-    public $table = "data_token";
+    private $table = 'test_token';
 
-    //设置登录字段信息
-    public $fillable = [
-        "id",
-        "guid",
-        "created_at",
-        "updated_at",
-        "deleted_at",
-        "token_time",
-        "client_guid",
-        "token"
+    private  $fillable = [
+        'id','client_id','created_at','updated_at','deleted_at','token','token_time'
     ];
-
-    //新用户首次登录，创建一个新的用户
-    public function dataClintLoginInfo($guid)
+    public function tokenmodel($guid)
     {
-        $token = app(GuidService::class)->create_guid();
+        $uuid = app(GuidService::class);
 
-        $time_later = time() + 300;
-
-        $this->create([
-            "token" => $token,
-            "token_time" => $time_later,
-            "client_guid" => $guid,
-        ]);
-        return $token;
+        if (!isset($guid)) {
+            // 创建
+            $this->create_query($guid,$uuid);
+        } else {
+            // 更新
+            $this->update_query($guid, $uuid);
+        }
     }
-
-    //根据用户guid，查询用户token过期时间和token
-    public function clientTokenSelect($guid)
+    protected function create_query($guid, $uuid)
     {
-        $data = $this->where('client_guid',"=",$guid)->first();
+
+        $data = $this->firstOrCreate(
+            ['token' => $uuid::create_guid()],
+            [
+                'token_time' => time() + 300,
+                'client_id' => $guid
+            ]
+        );
+        if ($data->client_id != $guid) {
+            $data->client_id = $guid;
+        }
+        $data->save();
+
         //判断是否为空
         if (empty($data)) {
             throw new \Exception("数据为空值", 21);
@@ -49,16 +48,20 @@ class DataClientLoginModel extends Model
             throw new \Exception("token已过期", 22);
         }
         return $data->token;
+
     }
 
-    //根据用户guid，更新token过期时间和token
-    public function updataToken($guid)
+    protected function update_query($guid, $uuid)
     {
-        $token = app(GuidService::class)->getGuid();
-        $this->where('client_guid',$guid)->update([
-            'token_time' => time() + 300,
-            'token' => $token,
-        ]);
-        return $token;
+        $data = $this->updateOrCreate(
+            ['token' => $uuid::create_guid()],
+            [
+                'token_time' => time() + 300,
+                'client_id' => $guid
+            ]
+        );
+
+        return $data->token;
     }
+
 }

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Config;
-use App\Models\TestTokenModel;
+use App\Models\DataClientLoginModel;
 
 class VerifyTokenService
 {
@@ -11,15 +11,15 @@ class VerifyTokenService
     private $version;
     private $hash;
     private $publicApiArr;
-    private $testToken;
+    private $loginToken;
 
-    public function __construct(TestTokenModel $tokenModel)
+    public function __construct(DataClientLoginModel $tokenModel)
     {
         $this->defaultToken = config::get('token.defaultToken');
         $this->version = config::get('token.version');
         $this->hash = config('token.hash');
         $this->publicApiArr = config::get('token.publicApiArr');
-        $this->testToken = $tokenModel;
+        $this->loginToken = $loginToken;
     }
 
     public function tokenService($request, $routes, $param, $timeNow)
@@ -34,7 +34,7 @@ class VerifyTokenService
                 throw new \Exception('版本号不一致', 18);
             }
             // 判断接口（商业、公共）
-            $token = $this->isSecret($request) ? $this->testToken->testmodel($guid) : $this->defaultToken;
+            $token = $this->isSecret($request) ? $this->loginToken->tokenmodel($guid) : $this->defaultToken;
             // 生成crypttoken
             $crypttoken = $this->getCryptToekn($token);
             $signature = md5($routes .
