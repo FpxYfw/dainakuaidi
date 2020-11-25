@@ -3,27 +3,37 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Services\WechatTokenService;
-use Illuminate\Support\Facades\Request;
+use App\Services\VerifyTokenService;
 
 class VerifySelfToken
 {
-    private $verify;
-    public function __construct(WechatTokenService $verify)
-    {
-        $this->verify = $verify;
-    }
+    private $verifyToken;
 
+    function __construct(
+        VerifyTokenService $verifyToken
+    ) {
+        $this->verifyToken = $verifyToken;
+    }
     public function handle($request, Closure $next)
     {
         try {
-            $cryptToken = $this->verify->tokenverify($request);
-            $this->verify->autograph($request, $cryptToken);
-            return $next($request);
+            $param = $request->all();
+            $routes = $request->path();
+            $timeNow = time();
+
+            $this->verifyToken->tokenService($request, $routes, $param, $timeNow);
+
+            $response = $next($request);
+            return response()->json([
+                'serverTime' => time(),
+                'serverNo' => 200,
+                'ResultData' => json_decode($response->getContent(), true)
+            ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'serverTime' => time(),
-                'serverNo' => $e->getCode(),
+                'serverNo' => $e->getMessage(),
                 'ResultData' => $e->getMessage()
             ]);
         }
