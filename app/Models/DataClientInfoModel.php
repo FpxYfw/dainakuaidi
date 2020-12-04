@@ -34,7 +34,6 @@ class DataClientInfoModel extends BaseModel
         if ($model->session_key != $res['session_key']) {
             $model->session_key = $res['session_key'];
         }
-
         $model->save();
 
         return $model;

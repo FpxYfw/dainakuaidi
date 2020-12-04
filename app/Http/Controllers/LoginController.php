@@ -10,7 +10,7 @@ class LoginController extends Controller
 {
     private $verifyparams;
     private $datainfo;
-    private $wechat;
+    private $wechatcurl;
 
     function __construct(
         VerifyParamsService $verifyparams,
@@ -24,31 +24,25 @@ class LoginController extends Controller
 
     public function login()
     {
-
               // 控制器里 应该 只存放「路由动作方法」
               try {
-                  
-                  $data = ['code' => 200 , "data" => [] ];
-                  // 设置 code 必填的规则
-                  $rule = ["code" => ["required" => true]];
-                  // 获取的 code
-                  $code = $_GET['code'];
-//                  dd($code);
-                // 验证 code 必填
-                $param = $this->verifyparams
-                -> init($_GET, $rule)
-                -> verifyRequired()
-                -> filter()
-                -> updateDataType()
-                -> param;
-                
-                // 使用 code 换取 session_key openid
-                $res = $this->wechatcurl -> code2session($code);
-                
-                // 保存数据
-                $data['data'] = $this->datainfo->create_query($res);
-                
-                return response()->json($data);
+                    $data = ['code' => 200 , "data" => [] ];
+                    // 设置 code 必填的规则
+                    $rule = ["code" => ["required" => true]];
+                    // 获取的 code
+                    $code = $_GET['code'];
+                    // 验证 code 必填
+                    $param = $this->verifyparams
+                    -> init($_GET, $rule)
+                    -> verifyRequired()
+                    -> filter()
+                    -> updateDataType()
+                    -> param;
+                    // 使用 code 换取 session_key openid
+                    $res = $this->wechatcurl -> code2session($code);
+                    // 保存数据
+                    $data['data'] = $this->datainfo->create_query($res);
+                    return response()->json($data);
             } catch (\Exception $e) {
                 echo $e->getCode();
                 echo $e->getMessage();
