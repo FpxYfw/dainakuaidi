@@ -28,12 +28,40 @@ Route::group(['prefix' => 'admin'],function (){
         Route::get('/exit', 'UserAddressController@exit');
         Route::get('/del', 'UserAddressController@del');
 
-        // 还原   （还未实现）
-        Route::get('/recovery', 'UserAddressController@recovery');
     });
     Route::get('/order', 'UserOrderController@order');
-    // 订单
-    Route::group(['prefix' => 'order'], function (){
-//        Route::get();
-    });
+});
+
+Route::get('coupon', 'CouponController@coupon');
+Route::group(['prefix' => 'coupon'], function (){
+    Route::get('/add', 'CouponController@add');
+    Route::get('/edit', 'CouponController@exit');
+    Route::get('/del', 'CouponController@del');
+    Route::get('/query', 'CouponController@query');
+    Route::get('/receive', 'CouponController@receive');
+    Route::get('/use', 'CouponController@useCoupon');
+    Route::get('/grant', 'CouponGrantController@grantTest');
+
+});
+
+Route::group(['prefix' => 'user'], function (){
+    Route::get('/add', 'UserController@add');
+    Route::get('/edit', 'UserController@edit');
+    Route::get('/del', 'UserController@del');
+    Route::get('/query','UserController@query');
+
+});
+
+Route::group(['prefix' => 'order'], function (){
+    Route::get('/add', 'OrderController@add');
+    Route::get('/edit', 'OrderController@edit');
+    Route::get('/del', 'OrderController@del');
+    Route::get('/query', 'OrderController@query');
+});
+
+Route::group(['prefix' => 'activity'], function () {
+    Route::get('/add', 'ActivityController@add');
+    Route::get('/edit', 'ActivityController@edit');
+    Route::get('/del', 'ActivityController@del');
+    Route::get('/query', 'ActivityController@query');
 });
